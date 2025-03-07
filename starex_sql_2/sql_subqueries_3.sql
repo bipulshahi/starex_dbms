@@ -100,3 +100,26 @@ and salary > any(select salary from employees_details where job_id in
 
 select * from employees_details where job_id = 'SH_CLERK'
 and salary > any(select salary from employees_details where job_id = 'IT_PROGRAMMER');
+
+#Accountants earning more then all AD_VPs
+select * from employees_details where job_id = 'AC_ACCOUNTANT'
+and salary > all(select salary from employees_details where job_id = 'AD_VP');
+
+#Employees recruited 1st in their department
+select * from employees_details e1
+where hire_date = (select min(hire_date) from employees_details e2);
+
+select * from employees_details e1
+where hire_date = (select min(hire_date) from employees_details e2 
+where e1.department_id = e2.department_id);
+
+#Employees earning the maximum salary in each job role
+select * from employees_details e1
+where salary = (select max(salary) from employees_details e2);
+
+select * from employees_details e1
+where salary = (select max(salary) from employees_details e2
+where e1.job_id = e2.job_id);
+
+
+
