@@ -38,3 +38,23 @@ as min_val
 from test;
 
 select * from test;
+#lag - retrieves the previous row's value, first row gets null
+select val , lag(val,1) over(order by val desc) from test;
+
+#lead - retrieves the next row's value, last row gets null
+select val , lead(val,1) over(order by val desc) from test;
+
+#NTILE() - Distributes rows into N equal parts
+select val, ntile(2) over(order by val desc) from test;
+
+select val, ntile(4) over(order by val desc) from test;
+
+#cume_dist() - shows the cumulative percentage of values less
+#than or equal to the current row
+
+select val , cume_dist() over() from test;
+select val , cume_dist() over(order by val asc) from test;
+select val , cume_dist() over(order by val desc) from test;
+
+select avg(val) from test;
+select val,avg(val) over() from test;
