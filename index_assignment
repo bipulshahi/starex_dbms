@@ -1,0 +1,56 @@
+1. Understanding Index Types
+
+Explain the difference between Clustered Index and Non-Clustered Index in MySQL. Provide an example where each type of index would be useful.
+2. Creating and Using Indexes
+
+You have the following table:
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT,
+    salary DECIMAL(10,2)
+);
+
+    Write an SQL query to create a non-clustered index on the last_name column.
+    Write an SQL query to create a composite index on (department_id, salary).
+    Explain how these indexes improve query performance.
+
+3. Performance Impact of Indexes
+
+Consider the following queries on a large dataset:
+
+SELECT * FROM employees WHERE last_name = 'Sharma';
+SELECT * FROM employees WHERE salary > 50000;
+
+    Which query would benefit more from an index and why?
+    Suggest an index that can optimize both queries and write the SQL statement to create it.
+
+4. Index Maintenance
+
+Indexes take up space and can slow down write operations.
+
+    How do indexes impact INSERT, UPDATE, and DELETE operations?
+    How can you remove an index if it is no longer needed? Write an SQL query to drop an index on the last_name column.
+
+5. Practical Use Case: Optimizing a Search Query
+
+Given the following orders table:
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    total_amount DECIMAL(10,2),
+    status ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled')
+);
+
+You frequently run the following query to get delivered orders in a specific date range:
+
+SELECT * FROM orders 
+WHERE status = 'Delivered' AND order_date BETWEEN '2024-01-01' AND '2024-12-31';
+
+    What type of index would you create to optimize this query?
+    Write an SQL query to create this index.
+
