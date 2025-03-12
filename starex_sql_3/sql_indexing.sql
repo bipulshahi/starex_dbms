@@ -1,12 +1,8 @@
-#Indexing - indexes improve query performance 
-#by making data retrieval faster.
-#Two types of indexing -
-#1. Clustered index - determines the physical order of 
-#data in the table
-#each table can have only one clustered index because 
-#rows can be physically orderd in 
-#only one way
-#Fast lookup by primary key
+-- Indexing - indexes improve query performance by making data retrieval faster.
+-- Two types of indexing -
+-- 1. Clustered index - determines the physical order of data in the table
+-- each table can have only one clustered index because rows can be physically orderd in only one way
+-- Fast lookup by primary key
 use starexdb;
 
 CREATE TABLE if not exists employees_details (
@@ -41,10 +37,10 @@ create index idx_salary on employees_details(salary);
 -- this will not create any clustered index as any table can have only one clustered index
 -- instead it will create a non clustered index 
 
-#2. Non-clustered indexes - 
-#A non-clustered index creates a seperate structure that stores pointers to the actual data
-#A table can have multiple non-clustered indexes.
-#Faster searches on non-primary key columns
+-- 2. Non-clustered indexes - 
+-- A non-clustered index creates a seperate structure that stores pointers to the actual data
+-- A table can have multiple non-clustered indexes.
+-- Faster searches on non-primary key columns
 create index idx_salary on employees_details(salary);
 -- it will create a seperate index for salary
 -- that helps in speed up searches on salary column
@@ -74,6 +70,18 @@ explain select * from employees_details where department_id = 103 and salary > 7
 -- when to use non clustered index?
   -- We need multiple fast serches on different columns
   -- example- searching employees by salary
+
+-- If our table has a primary key, then that key is clustered index
+-- If there is no primary key, but a unique key on a not null column, 
+	-- innodb uses that as the clustered index
+-- if neither exists, MySQL creates a hidden clustered index
+	-- the hidden clustered index is not based on any of our existing columns
+-- If we have additional indexes (like on last_name or phone), they are non-clustered index
+	-- Non-clustered index store the indexed column(s) and a reference to clustered index
+-- if we don't have primary then initially hidden clustered index will be there
+	-- when we add a primary key, innoDB replaces the hidden clustered index with our new primary key    
+-- If our table is not usining innodb, it does not have clustered index
+
 
 
 
