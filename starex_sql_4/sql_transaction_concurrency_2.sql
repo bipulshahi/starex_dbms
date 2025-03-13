@@ -26,39 +26,6 @@ values
 -- check payment status, if failed, rollback
 select payment_status from payments where order_id = @order_id into @status;
 
--- ROLLBACK;
+ROLLBACK;
 -- commit;
--- use case to check status
-delimiter $$
-create procedure process_order_transaction()
-begin
-	-- declare a variable to store payment status
-    declare payment_status varchar(20);
-    
-    -- start transaction inside procedure
-    start transaction;
-    
-	-- check payment status
-    select payment_status into payment_status from payments where order_id = @order_id;
-    
-    -- if payment failed, rollback everything
-	if payment_status = 'Failed' then
-		rollback;
-        select 'Transaction failed and rollback' as message;
-	else
-		-- if successfull commit
-		commit;
-        select 'Transaction commited successfully' as message;
-	end if;
-end $$
-delimiter ;
-
--- calling the procedure to test different cases
-call process_order_transaction();
-
--- drop procedure if exists process_order_transaction;
--- drop procedure if exists process_transaction;
-
-
-
 
