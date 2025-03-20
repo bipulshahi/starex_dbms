@@ -35,13 +35,12 @@ delimiter $$
 create procedure check_salary(in emp_id int, out salarycategory varchar(20))
 begin
 declare empSalary decimal(10,2);
-select salary into empSalary from new_employees where emp_id = emp_id;
+select salary into empSalary from new_employees where emp_id = emp_id limit 1;
 if empSalary > 70000 then
 	set salarycategory = 'High Salary';
 else
 	set salarycategory = 'Low Salary';
 end if;
-
 end $$
 delimiter ;
 
@@ -52,4 +51,4 @@ select @category as salary_status;
 
 select salary from new_employees where emp_id = 1;
 
-
+drop procedure check_salary;
