@@ -19,6 +19,24 @@ select * from employees_deatils where last_name='Sharma';
 -- bad practice (slow query)
 select * from employees_deatils where year(joining_date)=2020;
 -- good practice (fast query)
+
+
+-- Analysing query performance using EXPLAIN
+
+explain select * from employees_details where department_id = 101;
+-- id > Query step ID
+-- select_type > Type of query (Simple or Subquery)
+-- table > table being accessed
+-- type > type of scan(all,index,ref,range), index or ref means MYSQL is using index(FAST)
+-- possible_keys > suggested indexes
+-- key > Index actually used
+-- rows > estimated rows examined
+
+explain select * from employees_details where salary > 50000;
+
+
+select * from employees_details where lower(first_name) = 'john';
+
 -- applying functions on indexed columns makes MySQL ignore the index
 select * from employees_deatils where joining_date between '2020-01-01' and '2020-12-31';
 
