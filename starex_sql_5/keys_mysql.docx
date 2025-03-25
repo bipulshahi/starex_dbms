@@ -1,0 +1,29 @@
+1. Primary Key
+	- A primary key is a column (or a combination of columns) that uniquely identifies each record in a table.
+	- Must be unique for each row.
+	- Cannot be NULL
+	- Each table can have only one primary key
+	- create a students table
+
+2. Foreign Key
+	- A foreign key is a column in one table that refers to primary key of another table. It creates relationship between tables.
+	- A foreign key must match a value in the referenced table.
+	- Helps maintain referential integrity (ensures no orphan records exists)
+	- Create enrolments table
+
+3. Candidate Key
+	- A candidate key is any column (or combination of columns) that can uniquely identify a row.
+	- Can be multiple candidate keys in a table
+	- One Candidate key becomes Primary key
+
+
+Exercise-
+1. Define a Primary Key in a customers table.
+
+2. Create an orders table with a Foreign Key referencing customers.
+
+3. Identify at least two Candidate Keys in a products table.
+
+4. Insert valid and invalid data to test Primary Key constraints.
+
+5. Try inserting an order with a customer_id that does not exist in customers.
