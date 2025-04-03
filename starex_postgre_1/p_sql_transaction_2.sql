@@ -1,3 +1,5 @@
+-- Everything rollback in case payment failed
+
 select * from movies;
 select * from bookings;
 
