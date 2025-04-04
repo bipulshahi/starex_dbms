@@ -1,0 +1,214 @@
+NoSQL - Not only SQl
+=> database with flexibility
+=> database with scalability
+=> database with high availability
+
+SQl vs NoSQL
+1. Schema(SQL) - Fixed and predefined
+   Schema(NoSQL) - Flexible, Schema-less
+
+2. Scalability(SQL) - Vertically(adding more power to single server)
+   Scalability(NoSQL) - Horizontally(adding more servers)
+
+3. Data Storage(SQL) - Structured tables with rows and columns
+   Data Storage(NoSQL) - key-value, document, graph, wide-columns
+
+4. Query language(SQL) - SQL (Structured query language)
+   Query language(NoSQL) - Varies (No standard query language)
+
+5. ACID compliance (SQL) - Strong ACID compliance
+   ACID compliance (NoSQL) - relaxed for high scalability (Some NoSQL DBs support ACID)
+
+6. Best for(SQL) - Structured data with relationships (banking,erp.)
+   Best for(NoSQL) - Unstructured or semistructured (IOT,social media)
+
+Types of NoSQL Database -
+1. Key-value Stores(eg. Redis, DynamoDB) - 
+	-> Simple key-value pairs(like dictionary)
+	-> used in caching, session management
+
+2. Document Stores(eg. MongoDB, CouchDB)
+	-> JSON-like documents(flexible schema)
+	-> Content management, catalogs
+	
+3. Graph Database(eg. Neo4j, ArangoDB)
+	-> Nodes and edges for relationships
+	-> fraud detection, social networks
+
+4. Wide columns stores(eg. Cassandra,HBase)
+	-> Tables with flexible columns
+	-> Big data, time-series data
+
+
+When to use NoSQl vs Relational database?
+We can us NSQl -
+	1. We need high scalability
+	2. Distibuted architecture
+	3. Data structure changes rquently
+	4. We reuire high-speed read/write opeations
+We can use Relational database
+	1. Data integrity  and consistency is critical
+	2. We need complex queries and transaction
+
+Redis -
+	1. Its open source
+	2. It has a free version
+	3. It is easy to install and can be used locally
+	4. No clou dependency
+	5. It is fast (stored data in memory)
+	6. Can be used for caching, session storage, real-tim analytics
+
+mac - 
+brew install redis
+brew services start redis
+
+start redis command line interface - 
+redis-cli
+
+Redis is in-memory data structure store that can be used as a database, cache, and message broker. 
+It supports multiple data structure such as -
+1. Strings
+2. Hashes
+3. Lists
+4. Sets
+5. Stored Sets
+6. Bitmaps
+7. Geospatial indexes
+8. HyperLogLogs
+
+Use cases
+1. Session storage - websites use redis to store user session data for fast retrieval
+2. Caching - Frequently accessed data can be stored in redis to reduce database queries
+3. Real-time messaging - chat applications use redis as a message broker
+
+
+Features -
+1. In-memory storage - data stored in RAM, making read and write operations extremely fast
+2. Persistence - Redis provides option to dump data to disk.
+3. Data structure - supports strings, hashes , lists..
+4. Replication - Master-slave replication allows data to be copied to multiple servers.
+5. Pub/Sub Messaging - Redis can act as a message broker with its publish/subscribe mechanism
+
+
+NoSQL - DynamoDB and Redis
+
+Similaraties
+1. Both are NoSQL database
+2. Both uses Key-Value store
+3. Both are High scalable
+4. Both are optimized for fast read/writes but Redis can be used for ultra-fast read/writes
+5. AWS DynamoDB (fully managed) , AWS ElastiCache for Redis(Managed)
+6. Both supports Replication
+7. Both supports caching (Redis have buil-in caching by default)
+
+Differences -
+1. DynamoDB is a persistent NoSQL Database as it stores data persistently on SSDs
+   Redis is In-memory data store as it stores data in RAM (Optional persistent)
+2. DynamoDB is schema less, supports key-value and document storage
+   Redis supports key-value and various data structure (Lists, Hashes, Sets, Sorted sets etc.)
+3. DynamoDB supports complex queries(indexes, filtering, conditional updates)
+   Redis primarily key-based lookup
+4. DynamoDB has millisecond latency (good for large-scale applications)
+   Redis has microsecond latency (extremely fast reads/writes)
+5. DynamoDB is always persistent
+   Redis is by default volatile, but can be persisted
+6. DynamoDB supports ACID transactions
+   Redis supports basic transactions
+7. DynamoDB - Large scale applications requiring reliable persistent storage
+   Redis - Application needing fast in-memory access
+
+
+Use cases of DynamoDB -
+1. E-commerce order management - to store users orders and track inventory
+2. User Profiles & Metadata - user preferences, game progress, session history
+3. IOT data storage - capture sensor data from IOT device
+4. Financial transaction - For ledger based systems where data consistency is important
+
+Use cases of Redis -
+1. Caching API responses - Cache frequently accessed API responses to reduce database load. ex- a news website caches trending artilcles
+2. session management - store user session for quick authentication. Ex- A login system stores session tokens in redis for quick lookup
+3. Real time leaderboards - uses Sorted sets to track top players dynamically.
+4. Rate limiting - Limit the number of requests per user (API rate limiting). ex- An API allows only 100 requests per minute per user
+5. Pub/Sub messaging - Redis can act as a message broker for real time chat applications. ex. A stock trading platform sends price updates via redis pub/sub.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
