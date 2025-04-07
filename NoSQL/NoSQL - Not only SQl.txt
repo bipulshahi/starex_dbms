@@ -133,82 +133,187 @@ Use cases of Redis -
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+data structures -
+1. String
+set name "Ajay"
+set age 22
+get name
+get age
+set counter 10
+incr counter
+decr counter
+append name "Sharma"
+
+Use case 1 - User login token
+* Lets say user Id is 123, and their token is "abc123"
+set user:123:token "abc123"
+get user:123:token
+* This is like saving a small piece of data (the login token) for a user
+* In any web/mobile app where users log in.
+	* When a user logs in, the app generates a session token or JWT token to remember them.
+	* This token is stored in Redis for quick lookup.
+Why Redis?
+	* Redis is super fast (in-memory).
+	* Ideal for checking if a token is valid without hitting a slow database.
+Example:
+	* You open Amazon on your phone.
+	* The app sends your token to the server.
+Server checks:
+	* GET user:your_user_id:token
+	* If valid, you're logged in. If expired or not found, you're asked to log in again.
+
+Use Case 2: Page View Counter
+You want to count how many times the homepage is viewed.
+We'll use a counter key like page:home:views.
+	* INCR page:home:views
+	* INCR page:home:views
+	* GET page:home:views
+
+
+Use Case 3: Cache API Result with Expiry
+You want to cache weather data that expires after 1 hour.
+Save "sunny" weather info for Delhi, with auto-expiry in 3600 seconds (1 hour).
+	* SET weather:delhi "sunny" EX 3600
+	* GET weather:delhi
+	* TTL weather:delhi
+
+======================================================================================
+
+2. Hashes - hashes let you store multiple fields under a single key. Good for storing objects like a user profile
+	* HSET user:1001 name "joy" age "22" email "joy@abc.com"
+	* HGET user:1001 name
+	* HGETALL user:1001
+	* HGET user:1001 age
+	* HDEL user:1001 age
+	* HSET user:1001 age "31"
+
+Use case 1 - You're building a user profile for a web app
+	* You want to store - name , city
+		* HSET user:123 name "Alice" city "Mumbai"
+	* Get one field - name
+		* HGET user:123 name
+	* Get full profile
+		* HGETALL user:123
+
+Use case 2 - You're building a e-commerce app and want to cache product details.
+	* Store : Price, Stock
+		* HSET product:900 price "2500" stock "20"
+	* Check product price
+		* HSET product:900 stock "19"
+	* Get complete product info
+		* HGETALL product:900
+
+use case 3 - Store app settings/Config
+	* You want to store application-wide settings, like theme or font style
+	* Add config
+		* HSET settings:app theme "dark" font "arial"
+	* Read one setting
+		* HGET settings:app theme
+	* Change the setting
+		* HSET settings:app theme "light"
+	* view all settings
+		* HGETALL settings:app
+
+======================================================================================
+
+3. Lists - 
+	* An ordered collection of string
+	* It is like a queue or a to-do list
+	* We can push or pop items from the left or right
+	* Redis Lists are automatically created when you add your first item.
 	
+		* LPUSH mylist "item1"
+		* LPUSH mylist "item2"
+		* LPUSH mylist "item3"
+
+	* To view full list
+		* LRANGE mylist 0 -1
+
+	* RPUSH mylist "item4"
+		* RPUSH mylist "item4"
+
+	* Remove from left
+		* LPOP mylist
+
+	* Remove from right
+		* RPOP mylist
+
+	* Get specific item 
+		* LINDEX mylist 1
+
+	* Trim list to specific length
+		* LTRIM mylist 0 1
 
 
+Use case 1 - Recent user activities
+	* Store the last 5 things a user did on your app (clicked a button, watch a video etc..)
+	* Push recent actions to the list
+		* LPUSH user:123:activities "watched_video"
+		* LPUSH user:123:activities "clicked_profile"
+		* LPUSH user:123:activities "liked_post"
+
+	* Check the list
+		* LRANGE user:123:activities 0 -1
+
+	* keep only the last 5 actions
+		* LTRIM user:123:activities 0 4
 
 
+Use case 2 - Task queues/ Background jobs
+	* Apps may have background jobs (like sending emails, processing uploads). We can queue them with redis lists
+	* Push jobs to queue
+		* RPUSH task_queue "send_email:101"
+		* RPUSH task_queue "generate_pdf:102"
+
+	* Worker pulls the next job
+		* LPOP task_queue
 
 
+Use case 3 - Chat message queue
+	* in a chat app, we want to store recent message between users
+	* add messages
+		* RPUSH chat:alice:bob "Hi Bob!"
+		* RPUSH chat:alice:bob "How are you?"
 
+	* get all messages
+		* LRANGE chat:alice:bob 0 -1
 
+	* get last message only
+		* LINDEX chat:alice:bob -1
+
+======================================================================================
+
+4. Set-
+	* An unordered collection of unique strings (no duplicates allowed)
+	* it can be useful when we need to check membership, remove duplicates,
+	  or do set operations like union, intersection and difference
+	* create a set
+		* sadd myset "apple"
+		* sadd myset "oranges"
+		* sadd myset "cherry"
+		* sadd myset "apple"
+
+	* view all members of a set
+		* smembers myset
+
+	* check if an item exists
+		* sismember myset "apple"
+
+	* remove an item
+		* srem myset "apple"
+
+	* get number of items
+		* scard myset
+
+	* Set Operations (with two sets)
+		* sadd set1 "apple" "banana" "cherry"
+		* sadd set2 "banana" "cherry" "date"
+
+	* Intersection (common items)
+		* sinter set1 set2
+
+	* Union (all unique items)
+		* sunion set1 set2
+
+	* difference (items in set1 but not in set2)
+		* sdiff set1 set2
