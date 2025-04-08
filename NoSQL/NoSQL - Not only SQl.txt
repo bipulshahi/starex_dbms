@@ -317,3 +317,186 @@ Use case 3 - Chat message queue
 
 	* difference (items in set1 but not in set2)
 		* sdiff set1 set2
+
+
+Use case 1 - Track Unique visitors to a website
+	* Add user IDs to a daily set
+		* sadd visitors:2025-04-08 "users1"
+		* sadd visitors:2025-04-08 "users2"
+		* sadd visitors:2025-04-08 "users3"
+		* sadd visitors:2025-04-08 "users1"
+
+	* Check how many visitors
+		* scard visitors:2025-04-08
+
+	* See all unique visitors
+		* smembers visitors:2025-04-08
+
+
+Use case 2 - Find common interests between users
+	* Store each user's interest in a set
+		* sadd user:rahul:interests "hiking" "music" "reading"
+		* sadd user:rajiv:interests "reading" "gaming" "music"
+
+	* Find common interest
+		* sinter user:rahul:interests user:rajiv:interests
+
+	* Find interest that user1 has but user2 doesn't
+		* sdiff user:rahul:interests user:rajiv:interests
+
+Use case 3 - Tagging System - (Blog or Product)
+	* Tag articles/products
+		* sadd tag:python "article1" "article2"
+		* sadd tag:ai "article2" "article3"
+
+	* Find article with both python and ai
+		* sinter tag:python tag:ai
+
+	* find article with either tag
+		* sunion tag:python tag:ai
+
+======================================================================================
+
+5. Sorted set (ZSET)-
+	* Stores unique elements
+	* Each element is associated with a numeric score
+	* Items are always sorted by score (ascending)
+
+	* Create a sorted set
+		* zadd leaderboard 100 "Ajay"
+		* zadd leaderboard 200 "Rajiv"
+		* zadd leaderboard 150 "Jai"
+	
+	* View sorted set
+		* zrange leaderboard 0 -1 withscores
+
+	* View sorted set (Highest first. Descending order)
+		* zrevrange leaderboard 0 -1 withscores
+
+	* View score of an element
+		* zscore leaderboard "Rajiv"
+
+	* Increment a score
+		* zincrby leaderboard 50 "Rajiv"
+
+	* get the rank of player
+		* zrank leaderboard "Rajiv"
+
+
+Use case 1 - Track most viewed articles
+	* add articles as sorted set
+		* zadd article:view 20 "article:redis"
+		* zadd article:view 100 "article:ai"
+		* zadd article:view 120 "article:ml"
+
+	* show most popular article
+		* zrevrange article:view 0 0 withscores	
+
+	* increment view count
+		* zincrby article:view 1 "article:redis"
+
+
+Use case 2 - Time based sorted data (post or events)
+	* Store the fee posts by timestamp
+		* zadd feed:user123 172499000 "post1"
+		* zadd feed:user123 172502000 "post2"
+		* zadd feed:user123 172490000 "post3"
+	
+	* show laest post
+		* zrevrange feed:user123 0 0
+
+Use case 3 - task scheduling (Priotity Queue)
+	* Define sorted set elements using score to set priority or execution time.
+		* zadd tasks 1 "email:send"
+		* zadd tasks 5 "cleanup:temp"
+		* zadd tasks 3 "generate:report"
+	
+	* Fetch next task to run (lowest score = highest priority)
+		* zrange tasks 0 0
+
+	* Remove task after completion
+		* zrem tasks "email:send"
+
+======================================================================================
+
+* Bitmaps -
+	* bitmap is way to store binary data (1s or 0s) using bit operations
+	* used to track presence, activity or status using minimal memory
+	* internally, Redis stores this using Strings, but allows bit-level operations.
+
+	* set a bit - setbit key offset value
+		* offset - position
+		* value 1(True/active) or 0(false/inactive)
+
+		* setbit user:active 1 1 
+		* setbit user:active 3 1 
+		* setbit user:active 7 1
+
+	* get a bit 
+		* getbit user:active 1
+		* getbit user:active 2
+
+	* Count set bits
+		* bitcount user:active
+
+	* Use with Dates (daily logging tracking)
+		* setbit login:2025-04-07 123 1
+		* setbit login:2025-04-07 128 1
+		* setbit login:2025-04-08 123 1
+		* setbit login:2025-04-08 128 1
+		* setbit login:2025-04-08 129 1
+
+	* Bitwise operations - combine multiple bitmaps (users active on two multiple days)
+		* bitop and login:both login:2025-04-07 login:2025-04-08
+		* bitcount login:both
+
+
+Use Case 1 - Track if a user logged in on a specific day
+	* We run an app with userIDs starting from 0 to say, 1000.
+	* We want to know-
+		* Who logged in on a specific day?
+		* How many users logged in today?
+		* Did a specific user log in on a certain day?
+
+	* Track logins (setbit)
+		* setbit login:2025-04-08 101 1
+		* setbit login:2025-04-08 202 1
+		* setbit login:2025-04-08 305 1
+
+	* Check if a specific user logged in (getbit)
+		* getbit login:2025-04-08 101
+		* getbit login:2025-04-08 500
+
+	* Count total users who logged in (bitcount)
+		* bitount login:2025-04-08
+
+	* Track login on another day (April 7) (setbit)
+		* setbit login:2025-04-07 101 1
+		* setbit login:2025-04-07 500 1
+
+	* Find users who logged in on both days (bitop and)
+		* bitop and login:both login:2025-04-07 login:2025-04-08
+		* bitcount login:both
+
+	* Find users who logged in atleast one day (bitop or)
+		* bitop or login:any login:2025-04-07 login:2025-04-08
+		* bitcount login:any
+
+
+
+Use case 2 - Simulate a feature flag system using Redis bitmaps where we can enable or disable features (like dark mode) for specific users in memory efficient way.
+	* Keep track of which user have dark mode enabled using bitmaps
+	* bitmaps store 0 or 1 at a specific bit offset
+	* each bit position represents a user id
+	* very fast and compact for Boolean flags across millions of users
+
+
+	* Enable dark mode for users 1,2 and 5
+
+	* Check if a user has dark mode enabled
+
+	* Disable dark mode for a user
+
+	* Count how many users have dark mode enabled
+
+	* List all users with dark mode ON
