@@ -419,7 +419,7 @@ Use case 3 - task scheduling (Priotity Queue)
 
 ======================================================================================
 
-* Bitmaps -
+6 Bitmaps -
 	* bitmap is way to store binary data (1s or 0s) using bit operations
 	* used to track presence, activity or status using minimal memory
 	* internally, Redis stores this using Strings, but allows bit-level operations.
@@ -492,11 +492,212 @@ Use case 2 - Simulate a feature flag system using Redis bitmaps where we can ena
 
 
 	* Enable dark mode for users 1,2 and 5
+		* setbit feature:darkmode 1 1
+		* setbit feature:darkmode 2 1
+		* setbit feature:darkmode 5 1
 
 	* Check if a user has dark mode enabled
+		* getbit feature:darkmode 1
 
 	* Disable dark mode for a user
+		* setbit feature:darkmode 2 0
 
 	* Count how many users have dark mode enabled
+		* bitcount feature:darkmode
 
 	* List all users with dark mode ON
+		* redis bitmap don't store keys like sets, so to scan we can do like this
+		* for user_id in range(0,1000):
+			if redis.getbit("feature:darkmode" , user_id) == 1:
+				print(f"Dark mode ON for user {user_id}")
+
+======================================================================================
+
+7. Geospatial indexes - Redis has inbuilt support to store geolocation data (longitude & latitude)
+	* How far two locations are
+	* What locations are within a certain radius
+	* Coordinates of a place
+	* Sorting places by distance
+	* geoadd - add any location(lat,lon) to key
+	* geodist - find distance between 2 members
+	* georadius/geosearch - find places near a location
+	* geohash - get geohash string
+	* geopos - get latitude and longitud of a member
+
+
+	* Add some location
+		* geoadd <key> <longitude> <latitude> <member>
+		* geoadd stores 77.5956 12.9716 banglore
+		* geoadd stores 72.8777 19.0716 mumbai
+		* geoadd stores 88.3639 22.5726 kolkata
+		* geoadd stores 78.4867 17.3850 hyderabad
+
+	* find distance betwen two cities - km, mi, m ft
+		* geodist stores banglore mumbai km
+
+	* find store within 500 km of bangalore
+		* geosearch stores fromlonlat 77.5956 12.9716 byradius 500 km
+
+	* get exact coordinates of city
+		* geopos stores kolkata
+
+	* find out nearby places sorted by distance
+		* geosearch stores fromlonlat 77.5956 12.9716 byradius 1000 km asc withdist
+
+
+
+	* simulate for food delivery app
+	* add delivery agents with their current location - Delhi (latitude - 28.6139, longitude - 77.2090)
+		* geoadd agents 77.2090 28.6139 agent1
+		* geoadd agents 77.2100 28.6145 agent2
+		* geoadd agents 77.2200 28.6200 agent3
+		* geoadd agents 77.2300 28.6000 agent4
+
+
+	* Find agent within 3km radius of the customer - 77.2105,28.6150
+		* geosearch agents fromlonlat 77.2105 28.6150 byradius 3 km asc withdist
+
+	* Assign the nearest agent - will be handled by backend system
+
+	* get exact coordinates of an agent
+		* geopos agents agent1
+
+	* track how far the agent is from customer
+		* geoadd agents 77.2105 28.6150 customer
+		* geodist agents agent2 customer km
+
+======================================================================================
+8. HyperLogLog - A probabilistic data structure used to estimate the number of unique elements (cardinality) in a set.
+	* Very memory efficient (uses less the 12 kb even for millions of items)
+	* Tradeoff : Not 100% accurate (usually 1 % error)
+	* Uses - 
+		* Count unique visitors to a website  => track by IPs or user IDs
+		* count unique search queries       => store queries in hyperloglog
+		* Count daily active users (DAU)    => add user IDs per day
+		* Count unique emails opened        => add user IDs/email IDs
+	* commands
+		* pfadd key element       - add one or more elements to a hyperloglog
+		* pfcount key             - return estimated number of unique elements
+		* pfmerge dest key1 key2  - merge multiple hyperloglog into one
+
+	* Add some users (Simulate user IDs)
+		* pfadd unique_visitors:2025-04-07 users1
+		* pfadd unique_visitors:2025-04-07 users2
+		* pfadd unique_visitors:2025-04-07 users3
+		* pfadd unique_visitors:2025-04-07 users1
+	
+	* Get the estimated count
+		* pfcount unique_visitors:2025-04-07
+
+	* Add more users
+		* pfadd unique_visitors:2025-04-07 users4 users5 users6
+		* pfcount unique_visitors:2025-04-07
+
+	* Track over multiple days and merge them
+		* pfadd unique_visitors:2025-04-06 users2 users3 users7
+		* pfmerge total_visitors:week1 unique_visitors:2025-04-06 unique_visitors:2025-04-07
+		* pfcount total_visitors:week1
+
+
+Use case 1 -Track Daily Active Users (DAU)
+	* Count unique users who opened your app each day, without using too much memory
+	* Let's say users log in to your app on April 8 and April 9,2025.
+
+	* User open the app - simulate adding user IDs like user101, user102 etc
+		pfadd dau:2025-04-08 user101
+		pfadd dau:2025-04-08 user102
+		pfadd dau:2025-04-08 user103
+		pfadd dau:2025-04-08 user104
+
+		pfadd dau:2025-04-09 user104
+		pfadd dau:2025-04-09 user102
+		pfadd dau:2025-04-09 user105
+		pfadd dau:2025-04-09 user106
+
+	* Count unique users each day
+		pfcount dau:2025-04-08
+
+		pfcount dau:2025-04-09
+
+	* Get Weekly or Monthly Unique users - merge data for multiple days 
+		pfmerge dau:week1 dau:2025-04-08 dau:2025-04-09
+		pfcount dau:week1
+
+
+#Autmoating in backend
+* each time a user logs in or opens the app, you run -
+	* redis.pfadd(f"dau:{today}", user_id)
+* at midnight or weekly merge
+	* redis.pfmerge("dau:week1" , "dau:2025-04-01" , “dau:2025-04-02”, ....., “dau:2025-04-07”)
+
+#Benfits - Use just 12kb of memory per day (even for millions of users), super fast, easily scalable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
