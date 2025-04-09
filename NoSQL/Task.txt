@@ -1,0 +1,79 @@
+1. Strings – Track Page Views
+
+Simulate page views on /home and /contact pages.
+Tasks:
+
+    Increment /home page view 3 times.
+
+    Increment /contact page view 2 times.
+
+    Get the current view count of both pages.
+
+2. Hashes – Store User Profiles
+
+Store info for 2 users: Alice and Bob
+Tasks:
+
+    Use HSET to store: name, email, and city.
+
+    Update Bob’s city.
+
+    Fetch Alice’s profile.
+
+3. Lists – Track Recent Logins
+
+Maintain a list of the 5 most recent user logins.
+Tasks:
+
+    Add 5 user IDs to a list (simulate login order).
+
+    Get the last 3 logins.
+
+    Remove the oldest login (simulate logout or limit).
+
+4. Sets – Track Unique Features Used
+
+Simulate users using different app features.
+Tasks:
+
+    Add feature names used by users (e.g., "upload", "search", "darkmode") into a set.
+
+    Add duplicates and observe behavior.
+
+    Check if a feature exists in the set.
+
+5. Sorted Sets – Leaderboard
+
+Create a score leaderboard for a game.
+Tasks:
+
+    Add 3 players with different scores.
+
+    Update one player’s score.
+
+    Get top 2 players.
+
+6. Bitmaps – Feature Flags
+
+Track who has Dark Mode enabled.
+Tasks:
+
+    Enable dark mode for user IDs: 1, 2, 5.
+
+    Check if user 3 has dark mode enabled.
+
+    Count how many users have dark mode on.
+
+7. HyperLogLog – Unique Visitors
+
+Track unique visitors per day.
+Tasks:
+
+    Add some users to visitors:2025-04-07.
+
+    Add some overlapping users to visitors:2025-04-08.
+
+    Merge into visitors:week1.
+
+    Get estimated total weekly visitors.
+
